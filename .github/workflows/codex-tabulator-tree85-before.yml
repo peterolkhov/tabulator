@@ -1,0 +1,66 @@
+name: Tabulator original child-array display refresh before probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/probe-tabulator-tree85]
+permissions:
+  contents: read
+jobs:
+  native-contract-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: tabulator-tables/tabulator
+          ref: c9a7e67287557adba1fdde50a6e0e5c463a50769
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.14.0'
+      - name: Install frozen probe and guard original checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYASSETS'
+          import json,zlib,base64,os
+          from pathlib import Path
+          assets=json.loads(zlib.decompress(base64.b64decode('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')));temp=Path(os.environ['RUNNER_TEMP'])
+          for name in ['guard','assess']:(temp/('tab-tree85-'+name+'.py')).write_text(assets[name])
+          for name,path in [('fixture','test/e2e/tree-refresh.spec.js'),('config','playwright.tree85.config.mjs')]:
+           p=Path(path);assert not p.exists();p.parent.mkdir(parents=True,exist_ok=True);p.write_text(assets[name])
+          PYASSETS
+          python3 "$RUNNER_TEMP/tab-tree85-guard.py" before
+      - name: Install pinned native dependencies and Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python3 "$RUNNER_TEMP/tab-tree85-guard.py" after-install
+          npm exec -- playwright install --with-deps chromium
+      - name: Build exact original via native Rollup without prebuild fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec -- rollup -c build/rollup.mjs
+          python3 "$RUNNER_TEMP/tab-tree85-guard.py" after-build
+      - name: Record original child refresh observations outcome neutrally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/tab-tree85-guard.py" before-run
+          set +e
+          PLAYWRIGHT_JSON_OUTPUT_FILE="$RUNNER_TEMP/tab-tree85-results.json" npm exec -- playwright test --config playwright.tree85.config.mjs --reporter=line,json 2>&1 | tee "$RUNNER_TEMP/tab-tree85.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$status" > "$RUNNER_TEMP/tab-tree85-exit.txt"
+          echo TAB_TREE85_RAW_JSON_BEGIN
+          cat "$RUNNER_TEMP/tab-tree85-results.json"
+          echo TAB_TREE85_RAW_JSON_END
+          python3 "$RUNNER_TEMP/tab-tree85-assess.py" "$RUNNER_TEMP"
+      - name: Assert final exact source fixtures and consumed JS CSS
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/tab-tree85-guard.py" final
