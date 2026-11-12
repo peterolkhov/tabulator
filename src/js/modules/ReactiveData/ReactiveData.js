@@ -85,7 +85,8 @@ export default class ReactiveData extends Module{
 				if(!self.blocked && version === self.currentVersion){
 					self.block("data-unshift");
 					
-					args.forEach((arg) => {
+					// https://github.com/tabulator-tables/tabulator/issues/5005
+					args.reverse().forEach((arg) => {
 						self.table.rowManager.addRowActual(arg, true);
 					});
 					
@@ -166,8 +167,9 @@ export default class ReactiveData extends Module{
 			configurable: true,
 			value: function(){
 				var args = Array.from(arguments),
-				start = args[0] < 0 ? data.length + args[0] : args[0],
-				end = args[1],
+				start = args[0] < 0 ? Math.max(data.length + args[0], 0) : args[0],
+				// https://github.com/tabulator-tables/tabulator/issues/5005
+				end = args[1] < 0 ? 0 : args[1],
 				newRows = args[2] ? args.slice(2) : false,
 				startRow, result;
 				
@@ -182,10 +184,9 @@ export default class ReactiveData extends Module{
 								self.table.rowManager.addRowActual(rowData, true, startRow, true);
 							});
 						}else{
-							newRows = newRows.slice().reverse();
-							
+							// https://github.com/tabulator-tables/tabulator/issues/5005
 							newRows.forEach((rowData) => {
-								self.table.rowManager.addRowActual(rowData, true, false, true);
+								self.table.rowManager.addRowActual(rowData, false, false, true);
 							});
 						}
 					}
