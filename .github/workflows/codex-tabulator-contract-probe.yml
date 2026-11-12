@@ -1,0 +1,66 @@
+name: Tabulator original public getter and tree contract probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/probe-tabulator-identity-tree]
+permissions:
+  contents: read
+jobs:
+  native-contract-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: tabulator-tables/tabulator
+          ref: c9a7e67287557adba1fdde50a6e0e5c463a50769
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.14.0'
+      - name: Install frozen probe and guard original checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYASSETS'
+          import json,zlib,base64,os
+          from pathlib import Path
+          assets=json.loads(zlib.decompress(base64.b64decode('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')));temp=Path(os.environ['RUNNER_TEMP'])
+          for name in ['guard','assess']:(temp/('tab-contract-'+name+'.py')).write_text(assets[name])
+          for name,path in [('fixture','test/e2e/identity-tree.spec.js'),('config','playwright.probe.config.mjs')]:
+           p=Path(path);assert not p.exists();p.parent.mkdir(parents=True,exist_ok=True);p.write_text(assets[name])
+          PYASSETS
+          python3 "$RUNNER_TEMP/tab-contract-guard.py" before
+      - name: Install pinned native dependencies and Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python3 "$RUNNER_TEMP/tab-contract-guard.py" after-install
+          npm exec -- playwright install --with-deps chromium
+      - name: Build exact original via native Rollup without prebuild fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec -- rollup -c build/rollup.mjs
+          python3 "$RUNNER_TEMP/tab-contract-guard.py" after-build
+      - name: Record original contract observations outcome neutrally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/tab-contract-guard.py" before-run
+          set +e
+          PLAYWRIGHT_JSON_OUTPUT_FILE="$RUNNER_TEMP/tab-contract-results.json" npm exec -- playwright test --config playwright.probe.config.mjs --reporter=line,json 2>&1 | tee "$RUNNER_TEMP/tab-contract.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$status" > "$RUNNER_TEMP/tab-contract-exit.txt"
+          echo TAB_CONTRACT_RAW_JSON_BEGIN
+          cat "$RUNNER_TEMP/tab-contract-results.json"
+          echo TAB_CONTRACT_RAW_JSON_END
+          python3 "$RUNNER_TEMP/tab-contract-assess.py" "$RUNNER_TEMP"
+      - name: Assert final exact source fixtures and consumed JS CSS
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/tab-contract-guard.py" final
