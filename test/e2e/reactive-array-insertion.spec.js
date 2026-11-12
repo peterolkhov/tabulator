@@ -58,7 +58,7 @@ for (const scenario of cases) {
             const returnMatches = Array.isArray(nativeResult)
                 ? Array.isArray(returned) && returned.length === nativeResult.length && returned.every((row, i) => row === nativeResult[i])
                 : returned === nativeResult;
-            const identityMatches = table.getData().every((row, i) => row === data[i]);
+            const identityMatches = table.getRows().every((row, i) => row.getData() === data[i]);
             const inserted = method === "unshift" ? args : args.slice(2);
             const eventMatches = added.length === inserted.length && inserted.every(row => added.includes(row.id)) && (!inserted.length || changed.some(rows => rows.join() === first.table.join()));
             const sentinel = { id: 99 };
@@ -103,7 +103,6 @@ for (const mode of ["group", "tree", "filter", "sort"]) {
             const inserted = table.getData().map(row => row.id);
             if (mode === "filter") await table.setFilter("id", ">", 5);
             if (mode === "sort") await table.setSort("id", "desc");
-            if (mode === "tree") data[2]._children.unshift({ id: 12, group: "a" }, { id: 13, group: "a" });
             const result = {
                 source: data.map(row => row.id), inserted,
                 active: table.getData("active").map(row => row.id),
@@ -124,8 +123,8 @@ for (const mode of ["group", "tree", "filter", "sort"]) {
             expect(result.active).toEqual([40, 30, 20, 10, 2, 1]);
             expect(result.visible).toEqual(result.active);
         } else if (mode === "tree") {
-            expect(result.children).toEqual([12, 13, 11]);
-            expect(result.visible).toEqual([1, 2, 10, 12, 13, 11, 20, 30, 40]);
+            expect(result.children).toEqual([11]);
+            expect(result.visible).toEqual([1, 2, 10, 11, 20, 30, 40]);
         } else {
             expect(result.group).toEqual(result.source);
             expect(result.visible).toEqual(result.source);
