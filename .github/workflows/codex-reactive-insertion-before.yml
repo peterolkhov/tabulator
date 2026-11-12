@@ -1,0 +1,68 @@
+name: Tabulator pinned reactive insertion diagnosis
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/diagnose-reactive-insertion-order]
+permissions:
+  contents: read
+jobs:
+  native-before:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: tabulator-tables/tabulator
+          ref: c9a7e67287557adba1fdde50a6e0e5c463a50769
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.14.0'
+      - name: Install frozen diagnostic and capture original source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYASSETS'
+          import base64,zlib,json,os
+          from pathlib import Path
+          assets=json.loads(zlib.decompress(base64.b64decode('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')))
+          r=Path(os.environ['RUNNER_TEMP'])
+          for name in ['guard','assess']:(r/('tab-'+name+'.py')).write_text(assets[name])
+          for name,path in [('fixture','test/e2e/reactive-array-order.spec.js'),('config','playwright.before.config.mjs')]:
+           p=Path(path);assert not p.exists();p.parent.mkdir(parents=True,exist_ok=True);p.write_text(assets[name])
+          PYASSETS
+          python3 "$RUNNER_TEMP/tab-guard.py" before
+      - name: Install frozen native development dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python3 "$RUNNER_TEMP/tab-guard.py" after-install
+      - name: Build native distribution without mutating prebuild lint hook
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec -- rollup -c build/rollup.mjs
+          python3 "$RUNNER_TEMP/tab-guard.py" after-build
+      - name: Install official Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec -- playwright install --with-deps chromium
+      - name: Require exact finite native observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          PLAYWRIGHT_JSON_OUTPUT_FILE="$RUNNER_TEMP/tab-before-results.json" npm exec -- playwright test --config playwright.before.config.mjs --reporter=line,json 2>&1 | tee "$RUNNER_TEMP/tab-before.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$status" > "$RUNNER_TEMP/tab-before-exit.txt"
+          echo TAB_NATIVE_RAW_JSON_BEGIN
+          cat "$RUNNER_TEMP/tab-before-results.json"
+          echo TAB_NATIVE_RAW_JSON_END
+          python3 "$RUNNER_TEMP/tab-assess.py" "$RUNNER_TEMP"
+      - name: Verify all tracked source and frozen fixtures after all work
+        if: always()
+        shell: bash
+        run: python3 "$RUNNER_TEMP/tab-guard.py" final
